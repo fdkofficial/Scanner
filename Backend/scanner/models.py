@@ -10,7 +10,7 @@ class Samples(models.Model):
     sample_no = models.CharField(max_length=255,null=True,blank=True)
     department = models.ForeignKey(Department,on_delete=models.CASCADE)
     origin = models.CharField(max_length=255,null=True,blank=True)
-    destination= models.CharField(max_length=255,null=True,blank=True)
+    # destination= models.CharField(max_length=255,null=True,blank=True)
     collect_date = models.DateTimeField(auto_now=True)
     drop_of_date = models.DateTimeField()
     reciever_id = models.CharField(max_length=1000)
@@ -18,3 +18,10 @@ class Samples(models.Model):
 
 class Building(models.Model):
     name = models.CharField(max_length=255,null=True,blank=True)
+
+class Laberatory(models.Model):
+    name = models.CharField(max_length=255)
+
+class Destination(models.Model):
+    labs = models.ManyToManyField(Laberatory,null=True)
+    sample = models.ForeignKey(Samples,on_delete=models.CASCADE,null=True,blank=True)

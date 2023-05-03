@@ -30,6 +30,9 @@ def samples(request):
         serializer = SamplesSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            destination = DestinationSerializer(data=request.data)
+            if destination.is_valid():
+                destination.save()
             data  = {
             "status":"ok",
             "message":"successfull",

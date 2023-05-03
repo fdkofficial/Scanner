@@ -17,3 +17,8 @@ class BuildingSerializer(serializers.ModelSerializer):
         model = Building
         fields = '__all__'
 
+class DestinationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Destination
+        fields = '__all__'
+
