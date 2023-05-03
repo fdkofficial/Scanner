@@ -19,19 +19,19 @@ body{
 }
 
 .custom-bg-1 {
-    background-color: var(--custom-bg-1);
+    background-color: var(--custom-bg-1) !important;
 }
 
 .custom-bg-2 {
-    background-color: var(--custom-bg-2);
+    background-color: var(--custom-bg-2) !important;
 }
 
 .custom-bg-3 {
-    background-color: var(--custom-bg-3);
+    background-color: var(--custom-bg-3) !important;
 }
 
 .custom-bg-4 {
-    background-color: var(--custom-bg-4);
+    background-color: var(--custom-bg-4) !important;
 }
 
 .vector-bg {
