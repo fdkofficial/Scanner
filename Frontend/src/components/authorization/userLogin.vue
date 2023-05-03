@@ -10,7 +10,7 @@
                     <div class="my-3 mt-5">
                         <div class="form-floating">
                             <input type="email" class="form-control" id="email" placeholder="name@example.com">
-                            <label for="floatingInput">Email Address</label>
+                            <label for="floatingInput">Username</label>
                         </div>
                     </div>
                     <div class="my-3">
@@ -24,7 +24,7 @@
                     </div>
                     <div class="my-3 custom-bg-3 px-3 rounded-4">
                         <button class="btn btn-transparent w-100 text-white lh-base p-3"
-                            @click="$router.push({ 'name': 'home' })">Sign in <i class="fa-solid fa-sign-in"></i></button>
+                            @click="">Sign in <i class="fa-solid fa-sign-in"></i></button>
                     </div>
                     <div class="position-relative">
                         <span class="text-muted line">or continue with</span>
@@ -43,4 +43,20 @@
     </section>
 </template>
 <script>
+import AuthServices from '../../services/AuthServices';
+import ref from "vue"
+export default{
+    setup(){
+        let user = ref({})
+        const LoginUSer = () => {
+            let login = new AuthServices();
+            login.getAuthRequests(user.value).then((response) =>{
+                console.log(response.data)
+            })
+        }
+        return{
+            user
+        }
+    }
+}
 </script>
