@@ -1,0 +1,6 @@
+{
+  "appId": "scanner.app",
+  "appName": "scanner-app",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}
