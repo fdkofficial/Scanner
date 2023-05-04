@@ -3,11 +3,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
   {
     path: '/',
-    name: 'auth',
-    component: () => import('../components/authorization/mainAuth.vue')
-  },
-  {
-    path: '/user-login',
     name: 'user-login',
     component: () => import('../components/authorization/userLogin.vue')
   },
@@ -19,12 +14,17 @@ const routes = [
   {
     path: '/home',
     name: 'home',
-    component: () => import('../components/Home.vue')
+    component: () => import('../components/pages/Home.vue')
   },
   {
-    path: '/scanner',
-    name: 'scanner',
-    component: () => import('../components/QRScanner.vue')
+    path: '/collect',
+    name: 'collect',
+    component: () => import('../components/pages/Collect.vue')
+  },
+  {
+    path: '/drop',
+    name: 'drop',
+    component: () => import('../components/pages/Drop.vue')
   },
 ]
 

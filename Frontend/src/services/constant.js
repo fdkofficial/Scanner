@@ -5,7 +5,7 @@ class Constants {
     // base_url = this.url.base_url;
     base_url = "http://127.0.0.1:8000/";
     // ++++++++++++++++++++++++++++++++++++++++++++++++ NEW LINKS +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    token = "Token "+ 'f4f5ec52ba61ac099f8571e940aadb479cb50af0'
+    token = "Token "+ localStorage.getItem('Token')
     // Global
     logout = this.base_url + 'auth/logout/'
     login = this.base_url + 'auth/login/'

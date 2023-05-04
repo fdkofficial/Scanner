@@ -9,6 +9,9 @@ export default class SampleServices {
 
         const res = await axios({
             url: constants.sample_data,
+            headers: {
+                "Authorization": constants.token
+            },
             method: "GET"
         });
         return res;
@@ -18,6 +21,9 @@ export default class SampleServices {
 
         const res = await axios({
             url: constants.department,
+            headers: {
+                "Authorization": constants.token
+            },
             method: "GET"
         });
         return res;
@@ -27,6 +33,9 @@ export default class SampleServices {
 
         const res = await axios({
             url: constants.labaratory,
+            headers: {
+                "Authorization": constants.token
+            },
             method: "GET"
         });
         return res;
@@ -38,6 +47,9 @@ export default class SampleServices {
 
         const res = await axios({
             url: constants.sample_data,
+            headers: {
+                "Authorization": constants.token
+            },
             method: "POST",
             data: data
         });

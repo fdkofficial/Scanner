@@ -1,10 +1,10 @@
-<template class="body">
-    <section class="body vh-100 w-100">
+<template>
+    <section class="body custom-bg-1 vh-100 w-100">
         <div class="container-fluid glass-morphism">
             <div class="d-flex g-4 py-5 vh-100 justify-content-center align-items-center">
                 <div class="col text-center">
                     <h3 class="lh-base text-uppercase fw-medium">As-salamu alaykum!</h3>
-                    <p class="lh-base text-muted small px-4 fw-normal">Welcome back, Login to continue</p>
+                    <p class="lh-base text-muted small px-4 fw-bold custom-text">Welcome back, Login to continue</p>
                     <div class="my-3 mt-5">
                         <div class="form-floating">
                             <input v-model="user.username" type="text" class="form-control" id="email" placeholder="name@example.com">
@@ -42,17 +42,17 @@ export default{
     setup(){
         let user = ref({})
         const LoginUSer = () => {
-            // let login = new AuthServices();
-            // login.getAuthRequests(user.value).then((response) =>{
-            //     console.log(response.data)
-            //     if(response.data.token){
-            //         localStorage.setItem('Token',response.data.token)
-            //         router.push({'name':'home'})
-            //     }
-            //     else{
-            //         alert("Invalid Credentials")
-            //     }
-            // })
+            let login = new AuthServices();
+            login.getAuthRequests(user.value).then((response) =>{
+                console.log(response.data)
+                if(response.data.token){
+                    localStorage.setItem('Token',response.data.token)
+                    router.push({'name':'home'})
+                }
+                else{
+                    alert("Invalid Credentials")
+                }
+            })
             router.push({'name':'home'})
         }
         return{

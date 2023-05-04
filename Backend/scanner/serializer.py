@@ -9,7 +9,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         response = super().to_representation(instance)
         units = Unit.objects.filter(department=instance.id)
-        units_ser = UnitSerializer(units,many=True)
+        units_ser = UnitSerializer(units,many=True).data
         response['units'] = units_ser
         return response
 
