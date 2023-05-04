@@ -21,6 +21,11 @@ const routes = [
     name: 'home',
     component: () => import('../components/Home.vue')
   },
+  {
+    path: '/scanner',
+    name: 'scanner',
+    component: () => import('../components/QRScanner.vue')
+  },
 ]
 
 const router = createRouter({

@@ -1,7 +1,7 @@
 <template>
     <div class="container-fluid">
         <div class="d-flex flex-column g-4 justify-content-center vh-100 py-3">
-            <div class="col vh-100 w-100 rounded-5 custom-bg-1 vector-bg">
+            <div class="col vh-100 w-100 rounded-5 custom-bg-4 vector-bg">
                 <div class="d-flex h-100 align-items-center justify-content-center">
                     <img src="../../assets/logo.png" class="img-fluid p-3"  alt="">
                 </div>
@@ -21,3 +21,6 @@
         </div>
     </div>
 </template>
+<script>
+export default {}
+</script>

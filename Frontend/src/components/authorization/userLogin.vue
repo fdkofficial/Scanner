@@ -42,17 +42,18 @@ export default{
     setup(){
         let user = ref({})
         const LoginUSer = () => {
-            let login = new AuthServices();
-            login.getAuthRequests(user.value).then((response) =>{
-                console.log(response.data)
-                if(response.data.token){
-                    localStorage.setItem('Token',response.data.token)
-                    router.push({'name':'home'})
-                }
-                else{
-                    alert("Invalid Credentials")
-                }
-            })
+            // let login = new AuthServices();
+            // login.getAuthRequests(user.value).then((response) =>{
+            //     console.log(response.data)
+            //     if(response.data.token){
+            //         localStorage.setItem('Token',response.data.token)
+            //         router.push({'name':'home'})
+            //     }
+            //     else{
+            //         alert("Invalid Credentials")
+            //     }
+            // })
+            router.push({'name':'home'})
         }
         return{
             user,

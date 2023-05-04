@@ -60,28 +60,6 @@ body{
     letter-spacing: 1.5px;
 }
 
-.bg-custom {
-    background: linear-gradient(270deg, #00a7d5, #00ded8);
-}
-
-.text-custom {
-    color: linear-gradient(270deg, #00a7d5, #00ded8);
-}
-
-.nav-link.active {
-    transform: translateY(-20px);
-    height: 50px;
-    width: 50px !important;
-    box-shadow: 0px 0px 5px lightgray;
-    background-color: white !important;
-    color: #0d6efd !important;
-    transition: all 2s cubic-bezier(0.4, 0, 1, 1);
-}
-
-.navbar-toggler:focus {
-    box-shadow: none !important;
-}
-
 .body {
     background: url('/src/assets/cutout.png');
     background-color: var(--custom-bg-1);
@@ -92,33 +70,11 @@ body{
     background: rgba(244, 244, 244, 0.3);
 }
 
-.line::after,
-.line::before {
-    content: '';
-    position: absolute;
-    width: 70px;
-    height: 3px;
-    background: lightgrey;
-    top: 50%;
+.btn-check:checked+.btn{
+    background-color: #4B49AC !important;
+    color:#f8f7fb !important;
 }
 
-.line::after {
-    left: 10%;
-    border-radius: 50% 1% 1% 50%;
-}
-
-.line::before {
-    right: 10%;
-    border-radius: 1% 50% 50% 1%;
-}
-
-.rounded-container {
-    border-radius: 40px 40px 0 0;
-    z-index: 1;
-}
-
-.img-2-1 {
-    aspect-ratio: 1.8;
-    object-fit: contain;
-    object-position: center;
+.html5-qrcode-anchor-scan-type-change{
+    display: none !important;
 }
