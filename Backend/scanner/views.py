@@ -15,11 +15,11 @@ from .serializer import *
 @api_view(['GET','POST','PUT','DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-def samples(request):
+def collect_samples(request):
     if request.method == 'GET':
 
-        obj = Samples.objects.all()
-        serializer = SamplesSerializer(obj,many=True)
+        obj = SampleData.objects.all()
+        serializer = SampleDataSerializer(obj,many=True)
         data = {
             "satus":"ok",
             "message":"successfull",
@@ -27,12 +27,21 @@ def samples(request):
         }
         return Response(data=data,status=status.HTTP_200_OK)
     if request.method == 'POST':
-        serializer = SamplesSerializer(data=request.data)
+        sample_list = []
+        for i in request.data['samples']:
+            fil = Sample.objects.filter(sample_no=i['sample_no']).last()
+            if fil:
+                sample_list.append(fil.id)
+            else:
+                sample = SamplesSerializer(data=i)
+                if sample.is_valid():
+                    sample.save()
+                    sample_list.append(sample.data['id'])
+        request.data['sample_no'] = sample_list
+        request.data['collector_user'] = request.user.id
+        serializer = SampleDataSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            destination = DestinationSerializer(data=request.data)
-            if destination.is_valid():
-                destination.save()
             data  = {
             "status":"ok",
             "message":"successfull",
@@ -46,14 +55,8 @@ def samples(request):
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     if request.method == 'PUT':
         payment_type_id = request.POST.get('payment_type_id',None)
-        if payment_type_id is None:
-            data = {
-                "status":"error",
-                "message":"payment_type_id is required"
-            }
-            return Response(data=data,status=status.HTTP_404_NOT_FOUND)
-        obj = Samples.objects.get(id=payment_type_id)
-        serializer = SamplesSerializer(obj,data=request.data)
+        obj = SampleData.objects.get(id=payment_type_id)
+        serializer = SampleDataSerializer(obj,data=request.data)
         if serializer.is_valid():
             serializer.save()
             data  = {
@@ -82,4 +85,33 @@ def samples(request):
             "message":"deleted",
             }
         return Response(data=data, status=status.HTTP_200_OK)
+
+@api_view(['GET','POST','PUT','DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def department(request):
+    if request.method == 'GET':
+
+        obj = Department.objects.all()
+        serializer = DepartmentSerializer(obj,many=True)
+        data = {
+            "satus":"ok",
+            "message":"successfull",
+            "data": serializer.data
+        }
+        return Response(data=data,status=status.HTTP_200_OK)
+
+@api_view(['GET','POST','PUT','DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def labaratory(request):
+    if request.method == 'GET':
+        obj = Laberatory.objects.all()
+        serializer = LaberatorySerializer(obj,many=True)
+        data = {
+            "satus":"ok",
+            "message":"successfull",
+            "data": serializer.data
+        }
+        return Response(data=data,status=status.HTTP_200_OK)
 

@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'baton',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,43 +46,6 @@ INSTALLED_APPS = [
     'corsheaders',
 
 ]
-JAZZMIN_SETTINGS = {
-    "site_title": "Scanner Admin",
-
-    "site_header": "Scanner",
-
-    "site_brand": "Scanner",
-
-    "site_logo": "/logo.png",
-
-    "login_logo": None,
-
-    "login_logo_dark": None,
-    "icons": {
-        "auth": "fas fa-users-cog",
-        "auth.user": "fas fa-user",
-        "auth.Group": "fas fa-users",
-        "Patient.Patients": "fa fa-users",
-        "Patient.Address": "fa fa-address-book",
-        "Billing.HOSPITAL_BILLING": "fa fa-hospital",
-        "Billing.HOSPITAL_BILLING": "fa fa-hospital",
-        "CareTeam.CareTeam": "fa fa-user-plus",
-        "Diagnosis.Diagnosis": "fa fa-virus",
-        "Document.Document": "fa fa-book",
-        "Document.Operationrecord": "fa fa-folder-open",
-        "ICU.ICU_Location": "fa fa-hospital",
-        "Treatment.Dosage": "fa fa-syringe",
-    },
-    "default_icon_parents": "fas fa-database",
-    "default_icon_children": "fas fa-database",
-    "site_logo_classes": "img-circle",
-
-    "site_icon": None,
-
-    "welcome_sign": "Welcome to the Scanner",
-
-    "copyright": "Scanner Ltd"
-}
 
 CORS_ORIGIN_ALLOW_ALL = True
 
