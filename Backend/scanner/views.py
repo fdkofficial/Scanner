@@ -29,8 +29,12 @@ def collect_samples(request):
     if request.method == 'POST':
         sample_list = []
         for i in request.data['samples']:
-            sample = SamplesSerializer(data=i)
-            if sample.is_valid():
+            fil = Sample.objects.filter(sample_no=i['sample_no']).last()
+            if fil:
+                sample_list.append(fil.id)
+            else:
+                sample = SamplesSerializer(data=i)
+                if sample.is_valid():
                     sample.save()
                     sample_list.append(sample.data['id'])
         request.data['sample_no'] = sample_list
