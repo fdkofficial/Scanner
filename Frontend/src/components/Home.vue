@@ -5,7 +5,7 @@
       <div class="px-3">
         <div class="mb-3">
           <label for="formGroupExampleInput" class="form-label text-white">Sample No</label>
-          <input type="text" class="form-control" id="formGroupExampleInput" placeholder="eg : 0963045">
+          <input type="text" class="form-control" v-model="sampleData.sample_no" id="formGroupExampleInput" placeholder="eg : 0963045">
         </div>
         <!-- Department Start here -->
         <div>
@@ -14,12 +14,12 @@
         <!-- Department Accordion -->
         <div class="accordion" id="accordionExample">
           <!-- For loop come here -->
-          <div class="accordion-item">
+          <div class="accordion-item" v-for="i in list_departments" :key="i">
             <h2 class="accordion-header custom-bg-3 rounded-2">
               <button class="accordion-button shadow-none p-2 custom-bg-3 text-white rounded-2" type="button"
                 data-bs-toggle="collapse" data-bs-target="#collapse{id}" aria-expanded="true"
                 aria-controls="collapse{id}">
-                Main
+                {{ i }}
               </button>
             </h2>
             <div id="collapse{id}" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
@@ -82,14 +82,27 @@
 </template>
 <script>
 import { Html5QrcodeScanner } from "html5-qrcode";
-import { onMounted } from "vue";
+import { onMounted,ref } from "vue";
+import Sample from "../services/Sample"
 export default {
   setup() {
+    let sampleData = ref({
+      "sample_no" : []
+    })
+    let list_departments = ref();
     const onScanSuccess = (decodedText, decodedResult) => {
       // handle the scanned code as you like, for example:
       console.log(`Code matched = ${decodedText}`, decodedResult);
       let qr = document.getElementById('CodeScan')
       qr.innerHTML = decodedText
+      sampleData.value.sample_no.push(decodedText)
+    }
+
+    const listDepartment = () => {
+      let data = new Sample();
+      data.Department().then((response => {
+        list_departments.value = response.data.data
+      }))
     }
 
     const onScanFailure = (error) => {
@@ -112,6 +125,7 @@ export default {
     return {
       onScanSuccess,
       onScanFailure,
+      sampleData,
       dNone
     }
   }

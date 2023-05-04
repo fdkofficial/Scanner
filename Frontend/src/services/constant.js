@@ -9,6 +9,9 @@ class Constants {
     // Global
     logout = this.base_url + 'auth/logout/'
     login = this.base_url + 'auth/login/'
+    sample_data = this.base_url + 'sample-data/'
+    department = this.base_url + 'department/'
+    labaratory = this.base_url + 'labaratory/'
     
 
 }
