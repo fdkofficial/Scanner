@@ -47,6 +47,57 @@ INSTALLED_APPS = [
 
 ]
 
+BATON = {
+    'SITE_HEADER': 'Baton',
+    'SITE_TITLE': 'Baton',
+    'INDEX_TITLE': 'Site administration',
+    'CONFIRM_UNSAVED_CHANGES': True,
+    'SHOW_MULTIPART_UPLOADING': True,
+    'ENABLE_IMAGES_PREVIEW': True,
+    'CHANGELIST_FILTERS_IN_MODAL': True,
+    'CHANGELIST_FILTERS_ALWAYS_OPEN': False,
+    'CHANGELIST_FILTERS_FORM': True,
+    'MENU_ALWAYS_COLLAPSED': False,
+    'MENU_TITLE': 'Menu',
+    'MESSAGES_TOASTS': False,
+    'GRAVATAR_DEFAULT_IMG': 'retro',
+    'GRAVATAR_ENABLED': True,
+    'LOGIN_SPLASH': '/static/core/img/login-splash.png',
+    'SEARCH_FIELD': {
+        'label': 'Search contents...',
+        'url': '/search/',
+    },
+    'MENU': (
+        { 'type': 'title', 'label': 'main', 'apps': ('auth', ) },
+        {
+            'type': 'app',
+            'name': 'auth',
+            'label': 'Authentication',
+            'icon': 'fa fa-lock',
+            'models': (
+                {
+                    'name': 'user',
+                    'label': 'Users'
+                },
+                {
+                    'name': 'group',
+                    'label': 'Groups'
+                },
+            )
+        },
+        { 'type': 'title', 'label': 'Contents', 'apps': ('flatpages', ) },
+        { 'type': 'model', 'label': 'Pages', 'name': 'flatpage', 'app': 'flatpages' },
+        { 'type': 'free', 'label': 'Collect Sample Data', 'url': '/admin/scanner/sampledata/', 'perms': ('flatpages.add_flatpage', 'auth.change_user') },
+        { 'type': 'free', 'label': 'Drop Sample Data', 'url': '/admin/scanner/dropsampledata/', 'perms': ('flatpages.add_flatpage', 'auth.change_user') },
+        { 'type': 'free', 'label': 'Department', 'url': '/admin/scanner/department/', 'perms': ('flatpages.add_flatpage', 'auth.change_user') },
+        { 'type': 'free', 'label': 'Sample', 'url': '/sample-histories/', 'perms': ('flatpages.add_flatpage', 'auth.change_user') },
+    ),
+    'ANALYTICS': {
+        'CREDENTIALS': os.path.join(BASE_DIR, 'credentials.json'),
+        'VIEW_ID': '12345678',
+    }
+}
+
 CORS_ORIGIN_ALLOW_ALL = True
 
 
@@ -76,7 +127,7 @@ REST_FRAMEWORK = {
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR,'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

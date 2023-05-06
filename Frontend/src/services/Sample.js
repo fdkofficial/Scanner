@@ -5,7 +5,7 @@ var constants = new Constants();
 
 export default class SampleServices {
 
-    async SampleData() {
+    async CollectSampleData() {
 
         const res = await axios({
             url: constants.sample_data,
@@ -16,6 +16,48 @@ export default class SampleServices {
         });
         return res;
     }
+
+    async AddCollectSampleData(data) {
+
+        const res = await axios({
+            url: constants.collect_sample_data,
+            headers: {
+                "Authorization": constants.token
+            },
+            method: "POST",
+            data:data
+        });
+        return res;
+    }
+    
+
+
+async DropSampleData() {
+
+        const res = await axios({
+            url: constants.drop_sample_data,
+            headers: {
+                "Authorization": constants.token
+            },
+            method: "GET"
+        });
+        return res;
+    }
+
+    async AddDropSampleData(data) {
+
+        const res = await axios({
+            url: constants.drop_sample_data,
+            headers: {
+                "Authorization": constants.token
+            },
+            method: "POST",
+            data:data
+        });
+        return res;
+    }
+
+    
 
     async Department() {
 
@@ -41,19 +83,5 @@ export default class SampleServices {
         return res;
     }
 
-
-
-    async PostSampleData(data) {
-
-        const res = await axios({
-            url: constants.sample_data,
-            headers: {
-                "Authorization": constants.token
-            },
-            method: "POST",
-            data: data
-        });
-        return res;
-    }
 
 }

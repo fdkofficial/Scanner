@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework import status
 # Create your views here.
 from .serializer import *
-
+import datetime
 
 # Create your views here.
 @api_view(['GET','POST','PUT','DELETE'])
@@ -28,15 +28,16 @@ def collect_samples(request):
         return Response(data=data,status=status.HTTP_200_OK)
     if request.method == 'POST':
         sample_list = []
-        for i in request.data['samples']:
-            fil = Sample.objects.filter(sample_no=i['sample_no']).last()
+        request.data['collector_user'] = request.user.id
+        request.data['collect_date'] = datetime.datetime.now()
+        for i in request.data['sample_no']:
+            fil = Sample.objects.filter(sample_no=i).last()
             if fil:
                 sample_list.append(fil.id)
             else:
-                sample = SamplesSerializer(data=i)
-                if sample.is_valid():
-                    sample.save()
-                    sample_list.append(sample.data['id'])
+                sample = Sample(sample_no=i)
+                sample.save()
+                sample_list.append(sample.id)
         request.data['sample_no'] = sample_list
         request.data['collector_user'] = request.user.id
         serializer = SampleDataSerializer(data=request.data)
@@ -89,6 +90,83 @@ def collect_samples(request):
 @api_view(['GET','POST','PUT','DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
+def drop_samples(request):
+    if request.method == 'GET':
+
+        obj = DropSampleData.objects.all()
+        serializer = DropSampleDataSerializer(obj,many=True)
+        data = {
+            "satus":"ok",
+            "message":"successfull",
+            "data": serializer.data
+        }
+        return Response(data=data,status=status.HTTP_200_OK)
+    if request.method == 'POST':
+        sample_list = []
+        request.data['reciever_user'] = request.user.id
+        request.data['drop_of_date'] = datetime.datetime.now()
+        for i in request.data['sample_no']:
+            fil = Sample.objects.filter(sample_no=i).last()
+            if fil:
+                sample_list.append(fil.id)
+            else:
+                sample = Sample(sample_no=i)
+                sample.save()
+                sample_list.append(sample.id)
+        request.data['sample_no'] = sample_list
+        request.data['collector_user'] = request.user.id
+        serializer = DropSampleDataSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            data  = {
+            "status":"ok",
+            "message":"successfull",
+            "data":serializer.data
+            }
+            return Response(data=data,status=status.HTTP_201_CREATED)
+        data  = {
+            "status":"error",
+            "message":serializer.errors,
+            }
+        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+    if request.method == 'PUT':
+        payment_type_id = request.POST.get('payment_type_id',None)
+        obj = DropSampleData.objects.get(id=payment_type_id)
+        serializer = DropSampleDataSerializer(obj,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            data  = {
+            "status":"ok",
+            "message":"successfull",
+            "data":serializer.data
+            }
+            return Response(data=data,status=status.HTTP_201_CREATED)
+        data  = {
+            "status":"error",
+            "message":serializer.errors,
+            }
+        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+    if request.method == 'DELETE':
+        payment_type_id = request.POST.get('payment_type_id',None)
+        if payment_type_id is None:
+            data = {
+                "status":"error",
+                "message":"payment_type_id is required"
+            }
+            return Response(data=data,status=status.HTTP_404_NOT_FOUND)
+        obj = Samples.objects.get(id=payment_type_id)
+        obj.delete()
+        data  = {
+            "status":"ok",
+            "message":"deleted",
+            }
+        return Response(data=data, status=status.HTTP_200_OK)
+
+
+
+@api_view(['GET','POST','PUT','DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def department(request):
     if request.method == 'GET':
 
@@ -100,6 +178,34 @@ def department(request):
             "data": serializer.data
         }
         return Response(data=data,status=status.HTTP_200_OK)
+
+from django.shortcuts import render
+def sample_history(request):
+    if request.method == 'GET':
+        return render(request,'sample.html')
+    
+
+from django.shortcuts import render
+def view_sample_history(request):
+    if request.method == 'GET':
+        return render(request,'viewsample.html')
+    
+
+   
+@api_view(['GET','POST','PUT','DELETE'])
+def sample_history_data(request):
+    if request.method == 'GET':
+        id = request.GET.get('id')
+        if id is not None:
+            obj = Sample.objects.get(id=id)
+        else:
+            obj = Sample.objects.all()
+        obj_ser = SamplesSerializer(obj,many=True).data
+        
+        return Response(data=obj_ser)
+
+
+
 
 @api_view(['GET','POST','PUT','DELETE'])
 @authentication_classes([TokenAuthentication])

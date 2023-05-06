@@ -18,8 +18,9 @@
                     <div class="accordion-body p-2">
                         <div class="d-flex flex-row flex-wrap justify-content-evenly gap-2 p-0 m-0">
                             <div class="my-2" v-for="j in i.units" :key="j">
-                                <input @change="addUnits(j.id)" type="checkbox" class="btn-check" :id="'btn-check-' + j.id"
-                                    autocomplete="off" data-bs-toggle="modal" data-bs-target="#UnitsModal">
+                                <input @click="sampleData.origin = j" type="checkbox" class="btn-check"
+                                    :id="'btn-check-' + j.id" autocomplete="off" data-bs-toggle="modal"
+                                    data-bs-target="#UnitsModal">
                                 <label class="btn custom-bg-2 pt-2 text-white btn-sm" :for="'btn-check-' + j.id">{{ j.name
                                 }}</label>
                             </div>
@@ -53,10 +54,11 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>Unit</td>
-                                    <td>Sample No</td>
-                                    <td><button class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button></td>
+                                <tr v-for="i in sampleData.sample_no" :key="i">
+                                    <td>{{ sampleData.origin.name }}</td>
+                                    <td>{{ i }}</td>
+                                    <td><button class="btn btn-danger btn-sm" @click="sampleData.sample_no = sampleData.sample_no.filter((val) => val != i)" ><i class="fa-solid fa-trash"></i></button>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -64,7 +66,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn custom-bg-2 text-white">Save changes</button>
+                    <button type="button" @click="addSampleData" class="btn custom-bg-2 text-white" data-bs-dismiss="modal">Save</button>
                 </div>
             </div>
         </div>
@@ -77,42 +79,58 @@ import Sample from "../../services/Sample"
 export default {
     setup() {
         let sampleData = ref({
-            "sample_no": [],
-            "origin": [],
+            "sample_no": [123,543],
+            "origin": {
+                name:"",
+                id:""
+            },
         })
 
-        const addUnits = (val) => {
-            if (sampleData.value.origin.filter((fil) => fil == val).length > 0) {
-                sampleData.value.origin = sampleData.value.origin.filter((fil) => fil != val)
-                // alert("unselected")
-            }
-            else {
-                sampleData.value.origin.push(val);
-                // alert("new cal selected")
-            }
-        }
+        // const addUnits = (val) => {
+        //     if (sampleData.value.origin.filter((fil) => fil == val).length > 0) {
+        //         sampleData.value.origin = sampleData.value.origin.filter((fil) => fil != val)
+        //         // alert("unselected")
+        //     }
+        //     else {
+        //         sampleData.value.origin.push(val);
+        //         // alert("new cal selected")
+        //     }
+        // }
 
         let list_departments = ref();
         let list_lab = ref();
+        // let selected_unit = ref({});
         const onScanSuccess = (decodedText, decodedResult) => {
             // handle the scanned code as you like, for example:
             console.log(`Code matched = ${decodedText}`, decodedResult);
             let qr = document.getElementById('CodeScan')
             qr.innerHTML = decodedText
-            sampleData.value.sample_no.push(decodedText)
+            if (sampleData.value.sample_no.filter((val) => val == decodedText ).length >0){
+                alert('Sample Already Exisit')
+            }
+            else{
+                sampleData.value.sample_no.push(decodedText)
+            }
         }
 
         const listDepartment = () => {
             let data = new Sample();
             data.Department().then((response => {
+                // sampleData.value = response.data.data;
                 list_departments.value = response.data.data;
             }))
         }
 
         const addSampleData = () => {
             let data = new Sample();
-            data.PostSampleData().then((response => {
-                list_departments.value = response.data.data;
+            sampleData.value.origin = sampleData.value.origin.id;
+            data.AddCollectSampleData(sampleData.value).then((response => {
+                // sampleData.value = response.data.data;
+                console.log('saved', response.data)
+                sampleData.value = {
+                    "sample_no": [],
+                    "origin": '',
+                }
             }))
         }
 
@@ -151,9 +169,11 @@ export default {
             onScanFailure,
             list_departments,
             list_lab,
-            addUnits,
+            // addUnits,
             sampleData,
             listLaberatory,
+            addSampleData,
+            // selected_unit,
             dNone
         }
     }

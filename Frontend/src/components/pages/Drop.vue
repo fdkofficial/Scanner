@@ -4,11 +4,11 @@
         <div class="my-4" v-for="lab in list_lab" :key="lab">
             <input type="checkbox" class="btn-check " id="destination{id}" autocomplete="off" data-bs-toggle="modal"
                 data-bs-target="#UnitsModal">
-            <label class="btn custom-bg-3 text-white shadow-sm pt-2 btn-sm w-100 rounded-4" for="destination{id}">{{
+            <label @click="sampleData.destination = lab" class="btn custom-bg-3 text-white shadow-sm pt-2 btn-sm w-100 rounded-4" for="destination{id}">{{
                 lab.name
             }}</label>
         </div>
-
+<!-- {{ sampleData }} -->
     </div>
     <!-- Modal -->
     <div class="modal fade" id="UnitsModal" tabindex="-1" aria-labelledby="UnitsModalLabel" aria-hidden="true">
@@ -23,7 +23,7 @@
                     <div id="reader" style="width:100%; height:50vh;"></div>
                     <div class="mb-3">
                         <label for="ReciverId" class="form-label">Reciver ID</label>
-                        <input type="text" class="form-control" id="ReciverId" placeholder="Reciver Id">
+                        <input type="text" v-model="sampleData.reciever_id" class="form-control" id="ReciverId" placeholder="Reciver Id">
                     </div>
                     <div class="mb-3">
                         <table class="table table-bordered table-stripped text-center">
@@ -32,15 +32,15 @@
                             <col style="width:5%;">
                             <thead>
                                 <tr class="custom-bg-3 text-white">
-                                    <th>Unit</th>
+                                    <th>Destination</th>
                                     <th>Sample No</th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>Unit</td>
-                                    <td>Sample No</td>
+                                <tr v-for="i in sampleData.sample_no" :key="i">
+                                    <td>{{ sampleData.destination.name }}</td>
+                                    <td>{{ i }}</td>
                                     <td><button class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
                                     </td>
                                 </tr>
@@ -50,7 +50,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn custom-bg-2 text-white">Save changes</button>
+                    <button type="button" @click="addSampleData" class="btn custom-bg-2 text-white"  data-bs-dismiss="modal" >Save changes</button>
                 </div>
             </div>
         </div>
@@ -63,23 +63,28 @@ import Sample from "../../services/Sample"
 export default {
     setup() {
         let sampleData = ref({
-            "sample_no": [],
-            "origin": [],
+            "sample_no": [123,321],
+            "reciever_id":null,
+            "destination": {
+                name:"",
+                id:""
+            },
         })
 
-        const addUnits = (val) => {
-            if (sampleData.value.origin.filter((fil) => fil == val).length > 0) {
-                sampleData.value.origin = sampleData.value.origin.filter((fil) => fil != val)
-                // alert("unselected")
-            }
-            else {
-                sampleData.value.origin.push(val);
-                // alert("new cal selected")
-            }
-        }
+        // const addUnits = (val) => {
+        //     if (sampleData.value.destination.filter((fil) => fil == val).length > 0) {
+        //         sampleData.value.destination = sampleData.value.destination.filter((fil) => fil != val)
+        //         // alert("unselected")
+        //     }
+        //     else {
+        //         sampleData.value.destination.push(val);
+        //         // alert("new cal selected")
+        //     }
+        // }
 
         let list_departments = ref();
         let list_lab = ref();
+        // let selected_unit = ref({});
         const onScanSuccess = (decodedText, decodedResult) => {
             // handle the scanned code as you like, for example:
             console.log(`Code matched = ${decodedText}`, decodedResult);
@@ -91,15 +96,30 @@ export default {
         const listDepartment = () => {
             let data = new Sample();
             data.Department().then((response => {
+                // sampleData.value = response.data.data;
                 list_departments.value = response.data.data;
             }))
         }
 
         const addSampleData = () => {
             let data = new Sample();
-            data.PostSampleData().then((response => {
-                list_departments.value = response.data.data;
-            }))
+            if (!sampleData.value.reciever_id){
+                alert("Please Enter Reciever id")
+            }
+            else{
+                sampleData.value.destination = sampleData.value.destination.id;
+                data.AddDropSampleData(sampleData.value).then((response => {
+                    // sampleData.value = response.data.data;
+                    console.log('saved', response.data)
+                    sampleData.value = {
+                        "sample_no": [],
+                        "destination": {
+                    name:"",
+                    id:""
+                },
+                    }
+                }))
+            }
         }
 
 
@@ -137,9 +157,11 @@ export default {
             onScanFailure,
             list_departments,
             list_lab,
-            addUnits,
+            // addUnits,
             sampleData,
             listLaberatory,
+            addSampleData,
+            // selected_unit,
             dNone
         }
     }
