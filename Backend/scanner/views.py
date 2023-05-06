@@ -35,7 +35,7 @@ def collect_samples(request):
             if fil:
                 sample_list.append(fil.id)
             else:
-                sample = Sample(sample_no=i)
+                sample = Sample(sample_no=i,collected=True)
                 sample.save()
                 sample_list.append(sample.id)
         request.data['sample_no'] = sample_list
@@ -107,12 +107,18 @@ def drop_samples(request):
         request.data['drop_of_date'] = datetime.datetime.now()
         for i in request.data['sample_no']:
             fil = Sample.objects.filter(sample_no=i).last()
-            if fil:
+            if fil & fil.collected:
+                # sample_list.append(fil.id)
+                fil.collected = False
+                fil.save()
                 sample_list.append(fil.id)
+            elif not fil:
+                # sample = Sample(sample_no=i,collected=False)
+                # sample.save()
+                return Response(data=i+" "+"Not Collected Yet",status=status.HTTP_400_BAD_REQUEST)
             else:
-                sample = Sample(sample_no=i)
-                sample.save()
-                sample_list.append(sample.id)
+                return Response(data=i+" "+"Not Collected Yet",status=status.HTTP_400_BAD_REQUEST)
+            
         request.data['sample_no'] = sample_list
         request.data['collector_user'] = request.user.id
         serializer = DropSampleDataSerializer(data=request.data)
@@ -186,9 +192,10 @@ def sample_history(request):
     
 
 from django.shortcuts import render
-def view_sample_history(request):
+def view_sample_history(request,id):
+    sample_id = id
     if request.method == 'GET':
-        return render(request,'viewsample.html')
+        return render(request,'viewsample.html',{'sample_id':sample_id})
     
 
    
@@ -197,7 +204,7 @@ def sample_history_data(request):
     if request.method == 'GET':
         id = request.GET.get('id')
         if id is not None:
-            obj = Sample.objects.get(id=id)
+            obj = Sample.objects.filter(id=id)
         else:
             obj = Sample.objects.all()
         obj_ser = SamplesSerializer(obj,many=True).data

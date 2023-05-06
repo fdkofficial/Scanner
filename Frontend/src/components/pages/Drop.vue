@@ -25,6 +25,7 @@
                         <label for="ReciverId" class="form-label">Reciver ID</label>
                         <input type="text" v-model="sampleData.reciever_id" class="form-control" id="ReciverId" placeholder="Reciver Id">
                     </div>
+                    <span class="text-danger" v-if="error_msg">{{ error_label }}</span>
                     <div class="mb-3">
                         <table class="table table-bordered table-stripped text-center">
                             <col style="width:25%;">
@@ -50,7 +51,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    <button type="button" @click="addSampleData" class="btn custom-bg-2 text-white"  data-bs-dismiss="modal" >Save changes</button>
+                    <button type="button" @click="addSampleData" class="btn custom-bg-2 text-white" :data-bs-dismiss="!error_msg ? 'modal' : ''" >Save changes</button>
                 </div>
             </div>
         </div>
@@ -63,7 +64,7 @@ import Sample from "../../services/Sample"
 export default {
     setup() {
         let sampleData = ref({
-            "sample_no": [123,321],
+            "sample_no": [],
             "reciever_id":null,
             "destination": {
                 name:"",
@@ -84,13 +85,23 @@ export default {
 
         let list_departments = ref();
         let list_lab = ref();
+        let error_msg = ref(false);
+        let error_label = ref();
         // let selected_unit = ref({});
         const onScanSuccess = (decodedText, decodedResult) => {
             // handle the scanned code as you like, for example:
             console.log(`Code matched = ${decodedText}`, decodedResult);
-            let qr = document.getElementById('CodeScan')
-            qr.innerHTML = decodedText
-            sampleData.value.sample_no.push(decodedText)
+            // let qr = document.getElementById('CodeScan')
+            // qr.innerHTML = decodedText
+            decod.value = String(decodedText)
+            if (sampleData.value.sample_no.filter((val) => val == decod.value ).length >0){
+                // alert('Sample Already Exisit')
+                decod.value = 'Sample Already Exisit';
+            }
+            else{
+                sampleData.value.sample_no.push(decod.value)
+                decod.value = decodedText;
+            }
         }
 
         const listDepartment = () => {
@@ -100,7 +111,7 @@ export default {
                 list_departments.value = response.data.data;
             }))
         }
-
+        let decod = ref({})
         const addSampleData = () => {
             let data = new Sample();
             if (!sampleData.value.reciever_id){
@@ -109,14 +120,21 @@ export default {
             else{
                 sampleData.value.destination = sampleData.value.destination.id;
                 data.AddDropSampleData(sampleData.value).then((response => {
-                    // sampleData.value = response.data.data;
-                    console.log('saved', response.data)
-                    sampleData.value = {
-                        "sample_no": [],
-                        "destination": {
-                    name:"",
-                    id:""
-                },
+                    if(response.status ==201){
+                        console.log(response.status,'---')
+                        // sampleData.value = response.data.data;
+                        console.log('saved', response.data)
+                        sampleData.value = {
+                            "sample_no": [],
+                            "destination": {
+                        name:"",
+                        id:""
+                    },
+                    }
+                    }
+                    else{
+                        error_msg.value = true
+                        error_label.value = response.data.data
                     }
                 }))
             }
@@ -141,7 +159,7 @@ export default {
             listLaberatory();
             let html5QrcodeScanner = new Html5QrcodeScanner(
                 "reader",
-                { fps: 10, qrbox: { width: 400, height: 179 } },
+                { fps: 10, qrbox: { width: 500, height: 500 } },
       /* verbose= */ false);
             html5QrcodeScanner.render(onScanSuccess, onScanFailure);
         })
@@ -161,6 +179,9 @@ export default {
             sampleData,
             listLaberatory,
             addSampleData,
+            error_msg,
+            error_label,
+            decod,
             // selected_unit,
             dNone
         }

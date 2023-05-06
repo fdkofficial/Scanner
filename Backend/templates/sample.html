@@ -32,13 +32,14 @@
     }
 </style>
 <body>
-    {{samples}}
     <div class="container-fluid">
-        <div class="row vh-100">
-            <div class="col-1 border p-0 px-1">
-                <a href="#" class="btn btn-secondary d-inline-block my-3">&LeftArrow;Dashboard</a>
+        <div class="row row-cols-1 row-cols-md-2 vh-100">
+            <div class="col text-center col-md-1 border p-0 px-1 d-none d-md-block">
+                <a href="/admin/" class="nav-link d-inline-block my-3 d-none d-md-block">&LeftArrow; Back</a>
             </div>
-            <div class="col-11 p-2">
+            <div class="col col-md-11 p-2">
+                <a href="/admin/" class="nav-link d-inline-block my-3 d-inline d-md-none float-end">&LeftArrow; Back</a>
+                <h4 class="lh-lg">Sample</h4>
                 <table id="InquiryTable" class="table table-bordered table-stripped">
                     <col style="width:45%;">
                     <col style="width:55%;">
@@ -73,8 +74,8 @@
         dataType: 'json',
         success: function (data) {
             var rows = [];
-            var btn = "<a class='btn btn-success' href=""> &RightArrow; </a>"
             $.each(data, function (index, row) {
+                var btn = "<a class='btn btn-success' href='/view-sample-histories/"+row.id+"'> &RightArrow; </a>"
                 rows.push([
                     row.sample_no,
                     row.created_date,

@@ -7,5 +7,5 @@ urlpatterns = [
     path('labaratory/',views.labaratory,name='labaratory'),
     path('sample-histories/',views.sample_history,name='sample-histories'),
     path('sample-histories-api/',views.sample_history_data,name='sample-histories-data'),
-    path('view-sample-histories/',views.view_sample_history,name='sample-histories-data-id'),
+    path('view-sample-histories/<str:id>',views.view_sample_history,name='sample-histories-data-id'),
 ]

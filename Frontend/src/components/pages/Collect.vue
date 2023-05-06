@@ -70,6 +70,7 @@
                 </div>
             </div>
         </div>
+        {{ decod }}
     </div>
 </template>
 <script>
@@ -79,7 +80,7 @@ import Sample from "../../services/Sample"
 export default {
     setup() {
         let sampleData = ref({
-            "sample_no": [123,543],
+            "sample_no": [],
             "origin": {
                 name:"",
                 id:""
@@ -99,17 +100,23 @@ export default {
 
         let list_departments = ref();
         let list_lab = ref();
+        let decod = ref();
         // let selected_unit = ref({});
         const onScanSuccess = (decodedText, decodedResult) => {
             // handle the scanned code as you like, for example:
-            console.log(`Code matched = ${decodedText}`, decodedResult);
-            let qr = document.getElementById('CodeScan')
-            qr.innerHTML = decodedText
-            if (sampleData.value.sample_no.filter((val) => val == decodedText ).length >0){
-                alert('Sample Already Exisit')
+            // console.log(`Code matched = ${decodedText}`, decodedResult);
+            decodedResult;
+            // let qr = document.getElementById('CodeScan')
+            // qr.innerHTML = decodedText
+            decod.value = String(decodedText);
+            // alert('-')
+            if (sampleData.value.sample_no.filter((val) => val == decod.value ).length >0){
+                // alert('Sample Already Exisit')
+                decod.value = 'Sample Already Exisit';
             }
             else{
-                sampleData.value.sample_no.push(decodedText)
+                sampleData.value.sample_no.push(decod.value)
+                decod.value = decodedText;
             }
         }
 
@@ -151,10 +158,7 @@ export default {
         onMounted(() => {
             listDepartment();
             listLaberatory();
-            let html5QrcodeScanner = new Html5QrcodeScanner(
-                "reader",
-                { fps: 10, qrbox: { width: 400, height: 179 } },
-      /* verbose= */ false);
+            let html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: { width: 500, height: 500 } }, /* verbose= */ false);
             html5QrcodeScanner.render(onScanSuccess, onScanFailure);
         })
 
@@ -173,6 +177,7 @@ export default {
             sampleData,
             listLaberatory,
             addSampleData,
+            decod,
             // selected_unit,
             dNone
         }

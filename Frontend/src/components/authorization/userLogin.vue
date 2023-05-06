@@ -4,8 +4,9 @@
             <div class="d-flex g-4 py-5 vh-100 justify-content-center align-items-center">
                 <div class="col text-center">
                     <h3 class="lh-base text-uppercase fw-medium">As-salamu alaykum!</h3>
-                    <p class="lh-base text-muted small px-4 fw-bold custom-text">Welcome back, Login to continue</p>
+                    <p class="lh-base text-muted small px-4 fw-bold custom-text">Welcome back, Login to continue </p>
                     <div class="my-3 mt-5">
+                        <span class="text-danger" v-if="error_msg">Error Invalid Credentials</span>
                         <div class="form-floating">
                             <input v-model="user.username" type="text" class="form-control" id="email" placeholder="name@example.com">
                             <label for="floatingInput">Username</label>
@@ -13,7 +14,7 @@
                     </div>
                     <div class="my-3">
                         <div class="form-floating">
-                            <input v-model="user.password" type="password" class="form-control" id="floatingPassword" placeholder="Password">
+                            <input @click="error_msg = false" v-model="user.password" type="password" class="form-control" id="floatingPassword" placeholder="Password">
                             <label for="floatingPassword">Password</label>
                         </div>
                     </div>
@@ -41,23 +42,27 @@ import router from '../../router';
 export default{
     setup(){
         let user = ref({})
+        let error_msg = ref(false)
+        let token = ref('')
         const LoginUSer = () => {
-            // let login = new AuthServices();
-            // login.getAuthRequests(user.value).then((response) =>{
-            //     console.log(response.data)
-            //     if(response.data.token){
-            //         localStorage.setItem('Token',response.data.token)
-            //         router.push({'name':'home'})
-            //     }
-            //     else{
-            //         alert("Invalid Credentials")
-            //     }
-            // })
-            router.push({'name':'home'})
+            let login = new AuthServices();
+            login.getAuthRequests(user.value).then((response) =>{
+                if(response.data.token){
+                    localStorage.setItem('Token',response.data.token)
+                    token.value = response.data
+                    router.push({'name':'home'})
+                }
+                else{
+                    error_msg.value = true
+                }
+            })
+            // router.push({'name':'home'})
         }
         return{
             user,
-            LoginUSer
+            LoginUSer,
+            token,
+            error_msg
         }
     }
 }

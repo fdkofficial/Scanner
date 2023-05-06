@@ -18,6 +18,7 @@ class Unit(models.Model):
 class Sample(models.Model):
     sample_no = models.CharField(max_length=500)
     created_date = models.DateTimeField(auto_now=True)
+    collected = models.BooleanField(default=False)
     # name = models.CharField(max_length=255)
     def __str__(self):
         return str(self.sample_no)
