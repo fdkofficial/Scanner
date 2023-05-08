@@ -1,5 +1,5 @@
 {
-  "name": "scanner-app",
+  "name": "CPT Sample Scanner",
   "integrations": {
     "capacitor": {}
   },

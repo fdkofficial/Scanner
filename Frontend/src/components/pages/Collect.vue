@@ -18,11 +18,11 @@
                     <div class="accordion-body p-2">
                         <div class="d-flex flex-row flex-wrap justify-content-evenly gap-2 p-0 m-0">
                             <div class="my-2" v-for="j in i.units" :key="j">
-                                <input @click="sampleData.origin = j" type="checkbox" class="btn-check"
+                                <input @click="sampleData.origin = j; ChangeFunc()" type="checkbox" class="btn-check"
                                     :id="'btn-check-' + j.id" autocomplete="off" data-bs-toggle="modal"
                                     data-bs-target="#UnitsModal">
-                                <label class="btn custom-bg-2 pt-2 text-white btn-sm" :for="'btn-check-' + j.id">{{ j.name
-                                }}</label>
+                                <label class="btn custom-bg-2 pt-2 text-white btn-sm" :for="'btn-check-' + j.id">{{
+                                    j.name }}</label>
                             </div>
                         </div>
                     </div>
@@ -40,7 +40,8 @@
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div id="reader" style="width:100%; height:50vh;"></div>
+                    <div id="reader" style="width:auto;"></div>
+                    <span class="text-danger" v-if="error_msg">{{ error_label }}</span>
                     <div class="table-responsive my-3">
                         <table class="table table-bordered table-stripped text-center">
                             <col style="width:25%;">
@@ -57,7 +58,9 @@
                                 <tr v-for="i in sampleData.sample_no" :key="i">
                                     <td>{{ sampleData.origin.name }}</td>
                                     <td>{{ i }}</td>
-                                    <td><button class="btn btn-danger btn-sm" @click="sampleData.sample_no = sampleData.sample_no.filter((val) => val != i)" ><i class="fa-solid fa-trash"></i></button>
+                                    <td><button class="btn btn-danger btn-sm"
+                                            @click="sampleData.sample_no = sampleData.sample_no.filter((val) => val != i)"><i
+                                                class="fa-solid fa-trash"></i></button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -66,60 +69,85 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    <button type="button" @click="addSampleData" class="btn custom-bg-2 text-white" data-bs-dismiss="modal">Save</button>
+                    <button type="button" @click="addSampleData" class="btn custom-bg-2 text-white"
+                        data-bs-dismiss="modal">Save</button>
                 </div>
             </div>
         </div>
-        {{ decod }}
     </div>
 </template>
 <script>
-import { Html5QrcodeScanner } from "html5-qrcode";
 import { onMounted, ref } from "vue";
 import Sample from "../../services/Sample"
+import Quagga from 'quagga'
 export default {
     setup() {
         let sampleData = ref({
             "sample_no": [],
             "origin": {
-                name:"",
-                id:""
+                name: "",
+                id: ""
             },
         })
 
-        // const addUnits = (val) => {
-        //     if (sampleData.value.origin.filter((fil) => fil == val).length > 0) {
-        //         sampleData.value.origin = sampleData.value.origin.filter((fil) => fil != val)
-        //         // alert("unselected")
-        //     }
-        //     else {
-        //         sampleData.value.origin.push(val);
-        //         // alert("new cal selected")
-        //     }
-        // }
-
         let list_departments = ref();
+        let error_msg = ref(false);
+        let error_label = ref();
         let list_lab = ref();
         let decod = ref();
-        // let selected_unit = ref({});
-        const onScanSuccess = (decodedText, decodedResult) => {
-            // handle the scanned code as you like, for example:
-            // console.log(`Code matched = ${decodedText}`, decodedResult);
-            decodedResult;
-            // let qr = document.getElementById('CodeScan')
-            // qr.innerHTML = decodedText
-            decod.value = String(decodedText);
-            // alert('-')
-            if (sampleData.value.sample_no.filter((val) => val == decod.value ).length >0){
-                // alert('Sample Already Exisit')
-                decod.value = 'Sample Already Exisit';
+        // Scaning Part
+        const ChangeFunc = () => {
+            if (navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function') {
+                Quagga.init({
+                    inputStream: {
+                        name: "Live",
+                        type: "LiveStream",
+                        width: 0,
+                        target: document.querySelector('#reader')
+                    },
+                    decoder: {
+                        readers: ["code_128_reader"]
+                    },
+                    constraints: {
+                        facingMode: "environment",
+                        frameRate: {
+                            ideal: 10,
+                            max: 15
+                        },
+                        focusMode: "manual"
+                    },
+                }, function (err) {
+                    if (err) {
+                        error_msg.value = true;
+                        error_label.value = err;
+                        setTimeout(() => {
+                            error_msg.value = false;
+                        }, 2000);
+                        return
+                    }
+                    console.log("Initialization finished. Ready to start");
+                    Quagga.start();
+                    Quagga.onDetected(function (result) {
+                        var last_code = result.codeResult.code;
+                        if (sampleData.value.sample_no.filter((val) => val == last_code).length > 0) {
+                            error_msg.value = true;
+                            error_label.value = 'Sample Already Exisit';
+                            setTimeout(() => {
+                                error_msg.value = false;
+                            }, 2000);
+                        }
+                        else {
+                            error_msg.value = false;
+                            sampleData.value.sample_no.push(last_code)
+                            decod.value = last_code;
+                        }
+                    });
+                });
             }
-            else{
-                sampleData.value.sample_no.push(decod.value)
-                decod.value = decodedText;
-            }
-        }
 
+
+        }
+        // Listing Department
         const listDepartment = () => {
             let data = new Sample();
             data.Department().then((response => {
@@ -127,7 +155,7 @@ export default {
                 list_departments.value = response.data.data;
             }))
         }
-
+        // Adding sample
         const addSampleData = () => {
             let data = new Sample();
             sampleData.value.origin = sampleData.value.origin.id;
@@ -140,8 +168,7 @@ export default {
                 }
             }))
         }
-
-
+        // Listing library
         const listLaberatory = () => {
             let data = new Sample();
             data.Laberatory().then((response => {
@@ -149,37 +176,20 @@ export default {
             }))
         }
 
-        const onScanFailure = (error) => {
-            // handle scan failure, usually better to ignore and keep scanning.
-            // for example:
-            console.warn(`Code scan error = ${error}`);
-        }
-
         onMounted(() => {
             listDepartment();
             listLaberatory();
-            let html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: { width: 500, height: 500 } }, /* verbose= */ false);
-            html5QrcodeScanner.render(onScanSuccess, onScanFailure);
         })
-
-        const dNone = () => {
-            const btn = document.getElementById('html5-qrcode-button-camera-permission')
-            btn.click()
-            console.log('clicked')
-        }
-
         return {
-            onScanSuccess,
-            onScanFailure,
             list_departments,
             list_lab,
-            // addUnits,
             sampleData,
             listLaberatory,
             addSampleData,
             decod,
-            // selected_unit,
-            dNone
+            ChangeFunc,
+            error_msg,
+            error_label
         }
     }
 }
