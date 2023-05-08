@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">scanner-app</string>
-    <string name="title_activity_main">scanner-app</string>
-    <string name="package_name">scanner.app</string>
-    <string name="custom_url_scheme">scanner.app</string>
+    <string name="app_name">CPT Sample scanner</string>
+    <string name="title_activity_main">CPT Sample scanner</string>
+    <string name="package_name">nadaa.cpt.app</string>
+    <string name="custom_url_scheme">nadaa.cpt.app</string>
 </resources>

@@ -171,6 +171,7 @@ export default {
         onMounted(() => {
             listDepartment();
             listLaberatory();
+            Quagga.stop();
         })
         return {
             list_departments,
