@@ -215,6 +215,25 @@ def untis(request):
         return Response(data=data,status=status.HTTP_200_OK)
 
 
+from django.contrib.auth.models import User
+from login.serializer import LogsDetailsSerializer
+
+
+@api_view(['GET','POST','PUT','DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def logs(request):
+    if request.method == 'GET':
+        obj = User.objects.get(id=request.user.id)
+        serializer = LogsDetailsSerializer(obj)
+        data = {
+            "satus":"ok",
+            "message":"successfull",
+            "data": serializer.data
+        }
+        return Response(data=data,status=status.HTTP_200_OK)
+
+
 
 from django.shortcuts import render
 def sample_history(request):

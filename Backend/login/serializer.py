@@ -7,3 +7,17 @@ class UserDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
+
+from scanner.serializer import SampleData,SampleDataSerializer
+
+class LogsDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        origins = SampleData.objects.filter(collector_user=instance.id)
+        origin_ser = SampleDataSerializer(origins,many=True).data
+        response['logs'] = origin_ser
+
+
