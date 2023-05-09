@@ -1,89 +1,61 @@
 <template>
-    <div class="container-fluid">
-        <h4 class="p-0 px-3 m-0 my-4 lh-lg">Department</h4>
-        <div class="accordion" id="accordionExample">
-            <!-- For loop come here -->
-            <div class="accordion-item my-5" v-for="(i, index) in list_departments" :key="index">
-                <h2 class="accordion-header custom-bg-3 rounded-2">
-                    <button
-                        :class="index == 0 ? 'accordion-button shadow-none p-2 custom-bg-3 text-white rounded-2' : 'accordion-button shadow-none p-2 custom-bg-3 text-white rounded-2 collabsed'"
-                        type="button" data-bs-toggle="collapse" :data-bs-target="'#collapse' + index" aria-expanded="true"
-                        aria-controls="collapse{id}">
-                        {{ i.name }}
-                    </button>
-                </h2>
-                <div :id="'collapse' + index"
-                    :class="index == 0 ? 'accordion-collapse collapse show' : 'accordion-collapse collapse'"
-                    data-bs-parent="#accordionExample">
-                    <div class="accordion-body p-2">
-                        <div class="d-flex flex-row flex-wrap justify-content-evenly gap-2 p-0 m-0">
-                            <div class="my-2" v-for="j in i.units" :key="j">
-                                <input @click="sampleData.origin = j; ChangeFunc()" type="checkbox" class="btn-check"
-                                    :id="'btn-check-' + j.id" autocomplete="off" data-bs-toggle="modal"
-                                    data-bs-target="#UnitsModal">
-                                <label class="btn custom-bg-2 pt-2 text-white btn-sm" :for="'btn-check-' + j.id">{{
-                                    j.name }}</label>
-                            </div>
-                        </div>
+    <div class="container-fluid p-0">
+        <div class="card vh-100 p-0 m-0">
+            <div class="card-header p-0">
+                <h4 class="p-0 px-2 m-0 lh-lg">Scan Sample</h4>
+            </div>
+            <div class="card-body p-0 m-0">
+                <div id="reader" style="width:auto;"></div>
+                <span class="text-danger" v-if="error_msg">{{ error_label }}</span>
+                <div class="my-2 mx-2">
+                    <div class="form-check form-switch">
+                        <input @change="sampleData.took_a_round = !sampleData.took_a_round" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Took a round</label>
                     </div>
+                </div>
+                <div class="vh-50 table-responsive my-3">
+                    <table class="table table-bordered table-stripped text-center m-0 vh-30">
+                        <col style="width:30%;">
+                        <col style="width:65%;">
+                        <col style="width:5%;">
+                        <thead>
+                            <tr class="custom-bg-3 text-white">
+                                <th>Unit</th>
+                                <th>Sample No</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="i in sampleData.sample_no" :key="i">
+                                <td>{{ sampleData.origin.name }}</td>
+                                <td>{{ i }}</td>
+                                <td><button class="btn btn-danger btn-sm"
+                                        @click="sampleData.sample_no = sampleData.sample_no.filter((val) => val != i)"><i
+                                            class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </div>
-    </div>
-    <!-- Modal -->
-    <div class="modal fade" id="UnitsModal" tabindex="-1" aria-labelledby="UnitsModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-fullscreen">
-            <div class="modal-content">
-                <div class="modal-header custom-bg-3">
-                    <h1 class="modal-title fs-5 text-white" id="UnitsModalLabel">Scan Sample</h1>
-                    <button type="button" class="btn-close" style="filter:invert(1)" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="reader" style="width:auto;"></div>
-                    <span class="text-danger" v-if="error_msg">{{ error_label }}</span>
-                    <div class="table-responsive my-3">
-                        <table class="table table-bordered table-stripped text-center">
-                            <col style="width:25%;">
-                            <col style="width:70%;">
-                            <col style="width:5%;">
-                            <thead>
-                                <tr class="custom-bg-3 text-white">
-                                    <th>Unit</th>
-                                    <th>Sample No</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="i in sampleData.sample_no" :key="i">
-                                    <td>{{ sampleData.origin.name }}</td>
-                                    <td>{{ i }}</td>
-                                    <td><button class="btn btn-danger btn-sm"
-                                            @click="sampleData.sample_no = sampleData.sample_no.filter((val) => val != i)"><i
-                                                class="fa-solid fa-trash"></i></button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    <button type="button" @click="addSampleData" class="btn custom-bg-2 text-white"
-                        data-bs-dismiss="modal">Save</button>
-                </div>
+            <div class="card-footer text-end">
+                <button class="btn btn-primary mx-2" @click="addSampleData">Save</button>
+                <button class="btn btn-secondary" @click="$router.push({'path':'/'})">Close</button>
             </div>
         </div>
     </div>
 </template>
 <script>
-import { onMounted, ref } from "vue";
+import router from "../../router";
+import { onMounted, onUnmounted, ref } from "vue";
+import { useRoute } from "vue-router";
 import Sample from "../../services/Sample"
 import Quagga from 'quagga'
 export default {
     setup() {
         let sampleData = ref({
             "sample_no": [],
+            "took_a_round": false,
             "origin": {
                 name: "",
                 id: ""
@@ -119,7 +91,7 @@ export default {
                 }, function (err) {
                     if (err) {
                         error_msg.value = true;
-                        error_label.value = err;
+                        error_label.value = err
                         setTimeout(() => {
                             error_msg.value = false;
                         }, 2000);
@@ -153,6 +125,13 @@ export default {
                 list_departments.value = response.data.data;
             }))
         }
+        onUnmounted(() => {
+            try {
+                Quagga.stop();
+            } catch (error) {
+                console.log(error);
+            }
+        })
         // Adding sample
         const addSampleData = () => {
             let data = new Sample();
@@ -161,6 +140,7 @@ export default {
             data.AddCollectSampleData(sampleData.value).then((response => {
                 // sampleData.value = response.data.data;
                 console.log('saved', response.data)
+                router.push({path:'/'})
                 sampleData.value = {
                     "sample_no": [],
                     "origin": '',
@@ -168,16 +148,22 @@ export default {
             }))
         }
         // Listing library
-        const listLaberatory = () => {
+        const listUnits = () => {
             let data = new Sample();
-            data.Laberatory().then((response => {
-                list_lab.value = response.data.data;
+            data.Units(unit.value).then((response => {
+                sampleData.value.origin = response.data.data;
+                console.log(sampleData.value.origin, response.data)
             }))
         }
-
+        let unit = ref()
         onMounted(() => {
+            const {
+                params: { id },
+            } = useRoute();
+            unit.value = id;
+            ChangeFunc();
             listDepartment();
-            listLaberatory();
+            listUnits();
             try {
                 Quagga.stop();
             } catch (error) {
@@ -188,7 +174,6 @@ export default {
             list_departments,
             list_lab,
             sampleData,
-            listLaberatory,
             addSampleData,
             decod,
             ChangeFunc,
@@ -198,3 +183,9 @@ export default {
     }
 }
 </script>
+<style>
+.vh-30{
+    height: 30vh;
+    overflow-y: scroll;
+}
+</style>

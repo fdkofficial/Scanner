@@ -16,8 +16,10 @@ class LogsDetailsSerializer(serializers.ModelSerializer):
         fields = '__all__'
     def to_representation(self, instance):
         response = super().to_representation(instance)
-        origins = SampleData.objects.filter(collector_user=instance.id)
-        origin_ser = SampleDataSerializer(origins,many=True).data
-        response['logs'] = origin_ser
+        logs = SampleData.objects.filter(collector_user=instance.id)
+        print(logs)
+        logs_ser = SampleDataSerializer(logs,many=True).data
+        response['logs'] = logs_ser
+        return response
 
 

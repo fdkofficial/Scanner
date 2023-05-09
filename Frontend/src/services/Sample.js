@@ -25,14 +25,14 @@ export default class SampleServices {
                 "Authorization": constants.token
             },
             method: "POST",
-            data:data
+            data: data
         });
         return res;
     }
-    
 
 
-async DropSampleData() {
+
+    async DropSampleData() {
 
         const res = await axios({
             url: constants.drop_sample_data,
@@ -52,12 +52,12 @@ async DropSampleData() {
                 "Authorization": constants.token
             },
             method: "POST",
-            data:data
+            data: data
         });
         return res;
     }
 
-    
+
 
     async Department() {
 
@@ -71,17 +71,46 @@ async DropSampleData() {
         return res;
     }
 
-    async Laberatory() {
+    async Laberatory(code) {
 
         const res = await axios({
             url: constants.labaratory,
             headers: {
                 "Authorization": constants.token
             },
-            method: "GET"
+            method: "GET",
+            params: { "code": code }
         });
         return res;
     }
+
+    async Units(code) {
+
+        const res = await axios({
+            url: constants.units,
+            headers: {
+                "Authorization": constants.token
+            },
+            method: "GET",
+            params: { "code": code }
+        });
+        return res;
+    }
+
+
+    async Logs(code) {
+
+        const res = await axios({
+            url: constants.logs,
+            headers: {
+                "Authorization": constants.token
+            },
+            method: "GET",
+            params: { "id": code }
+        });
+        return res;
+    }
+
 
 
 }

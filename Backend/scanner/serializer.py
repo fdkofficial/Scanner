@@ -37,6 +37,7 @@ class SampleDataSerializer(serializers.ModelSerializer):
         response = super().to_representation(instance)
         response['collector_user']= f"{instance.collector_user.first_name} {instance.collector_user.last_name}" if instance.collector_user else ""
         response['origin']= instance.origin.name if instance.origin else ""
+        response['sample_no']= [ i.sample_no for i in instance.sample_no.all() ] if instance.sample_no else []
         # response['department']= instance.department.name if instance.department else ""
         return response
 

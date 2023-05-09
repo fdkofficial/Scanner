@@ -224,7 +224,7 @@ from login.serializer import LogsDetailsSerializer
 @permission_classes([IsAuthenticated])
 def logs(request):
     if request.method == 'GET':
-        obj = User.objects.get(id=request.user.id)
+        obj = User.objects.filter(id=request.user.id).last()
         serializer = LogsDetailsSerializer(obj)
         data = {
             "satus":"ok",

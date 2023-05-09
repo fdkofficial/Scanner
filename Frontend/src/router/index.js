@@ -17,12 +17,12 @@ const routes = [
     component: () => import('../components/pages/Home.vue')
   },
   {
-    path: '/collect',
+    path: '/collect/:id',
     name: 'collect',
     component: () => import('../components/pages/Collect.vue')
   },
   {
-    path: '/drop',
+    path: '/drop/:id',
     name: 'drop',
     component: () => import('../components/pages/Drop.vue')
   },
@@ -35,6 +35,11 @@ const routes = [
     path: '/drop-unit-scanner',
     name: 'drop-unit-scanner',
     component: () => import('../components/pages/DropUnitScanner.vue')
+  },
+  {
+    path: '/log',
+    name: 'log',
+    component: () => import('../components/pages/Log.vue')
   },
 ]
 

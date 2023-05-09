@@ -4,19 +4,18 @@
             <div class="card-header custom-bg-3">
                 <h6 class="text-white m-0 p-0">Scan Collection Unit</h6>
             </div>
-            <div class="card-body d-flex align-items-center">
-                <div id="reader"></div>
+            <div class="card-body d-flex align-items-center justify-content-center flex-column">
+                <div id="reader" class="h-auto w-100"></div>
                 <span class="text-danger" v-if="error_msg">{{ error_label }}</span>
-            </div>
-            <div class="card-footer">
-                <button class="btn custom-bg-3" @click="ChangeFunc()">Scan Collection Unit</button>
+                <button class="my-3 btn custom-bg-3 text-white" @click="$router.push({'name':'log'})">Check Log</button>
             </div>
         </div>
     </div>
 </template>
 <script>
 import Quagga from 'quagga';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
+import router from "../../router"
 export default {
     setup() {
         let error_msg = ref(false);
@@ -54,23 +53,16 @@ export default {
                     Quagga.start();
                     Quagga.onDetected(function (result) {
                         var last_code = result.codeResult.code;
-                        if (sampleData.value.sample_no.filter((val) => val == last_code).length > 0) {
-                            error_msg.value = true;
-                            error_label.value = 'Sample Already Exisit';
-                            setTimeout(() => {
-                                error_msg.value = false;
-                            }, 2000);
-                        }
-                        else {
-                            error_msg.value = false;
-                            sampleData.value.sample_no.push(last_code)
-                            decod.value = last_code;
-                        }
+                        console.log(last_code)
+                        router.push({"name":"collect",params:{id:last_code}})
                     });
                 });
             }
         }
         onMounted(() => {
+            ChangeFunc();
+        })
+        onUnmounted(() => {            
             try {
                 Quagga.stop();
             } catch (error) {
