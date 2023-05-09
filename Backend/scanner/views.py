@@ -107,20 +107,25 @@ def drop_samples(request):
         request.data['drop_of_date'] = datetime.datetime.now()
         for i in request.data['sample_no']:
             fil = Sample.objects.filter(sample_no=i).last()
-            if fil & fil.collected:
+            if fil and fil.collected:
                 # sample_list.append(fil.id)
                 fil.collected = False
                 fil.save()
                 sample_list.append(fil.id)
             elif not fil:
+                error_ = i+" Not Collected Yet"
                 # sample = Sample(sample_no=i,collected=False)
                 # sample.save()
-                return Response(data=i+" "+"Not Collected Yet",status=status.HTTP_400_BAD_REQUEST)
+                # return Response(data=i+" "+"Not Collected Yet",status=status.HTTP_400_BAD_REQUEST)
             else:
-                return Response(data=i+" "+"Not Collected Yet",status=status.HTTP_400_BAD_REQUEST)
+                error_ = i+" Not Collected Yet"
+                # return Response(data=data,status=status.HTTP_400_BAD_REQUEST)
             
         request.data['sample_no'] = sample_list
         request.data['collector_user'] = request.user.id
+        if error_:
+                data = error_
+                return Response(data=data,status=status.HTTP_200_OK)
         serializer = DropSampleDataSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -129,6 +134,7 @@ def drop_samples(request):
             "message":"successfull",
             "data":serializer.data
             }
+            
             return Response(data=data,status=status.HTTP_201_CREATED)
         data  = {
             "status":"error",

@@ -138,8 +138,8 @@ export default {
         }
         let decod = ref({})
         const addSampleData = () => {
+            let data = new Sample();
             if (!sampleData.value.reciever_id) {
-                let data = new Sample();
                 alert("Please Enter Reciever id")
             }
             else {
@@ -159,8 +159,7 @@ export default {
                         }
                     }
                     else {
-                        error_msg.value = true
-                        error_label.value = response.data.data
+                       alert(response.data)
                     }
                 }))
             }
