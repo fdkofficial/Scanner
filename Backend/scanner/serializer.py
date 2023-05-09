@@ -33,11 +33,23 @@ class SampleDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = SampleData
         fields = '__all__'
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['collector_user']= f"{instance.collector_user.first_name} {instance.collector_user.last_name}" if instance.collector_user else ""
+        response['origin']= instance.origin.name if instance.origin else ""
+        # response['department']= instance.department.name if instance.department else ""
+        return response
 
 class DropSampleDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = DropSampleData
         fields = '__all__'
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['reciever_user']= f"{instance.reciever_user.first_name} {instance.reciever_user.last_name}" if instance.reciever_user else ""
+        response['destination']= instance.destination.name if instance.destination else ""
+        # response['department']= instance.department.name if instance.department else ""
+        return response
 
 
 

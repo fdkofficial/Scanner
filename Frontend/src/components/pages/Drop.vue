@@ -44,7 +44,9 @@
                                 <tr v-for="i in sampleData.sample_no" :key="i">
                                     <td>{{ sampleData.destination.name }}</td>
                                     <td>{{ i }}</td>
-                                    <td><button @click="sampleData.sample_no = sampleData.sample_no.filter((val) => val != i)" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+                                    <td><button
+                                            @click="sampleData.sample_no = sampleData.sample_no.filter((val) => val != i)"
+                                            class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -136,11 +138,12 @@ export default {
         }
         let decod = ref({})
         const addSampleData = () => {
-            let data = new Sample();
             if (!sampleData.value.reciever_id) {
+                let data = new Sample();
                 alert("Please Enter Reciever id")
             }
             else {
+                Quagga.stop();
                 sampleData.value.destination = sampleData.value.destination.id;
                 data.AddDropSampleData(sampleData.value).then((response => {
                     if (response.status == 201) {
@@ -171,7 +174,11 @@ export default {
         onMounted(() => {
             listDepartment();
             listLaberatory();
-            Quagga.stop();
+            try {
+                Quagga.stop();
+            } catch (error) {
+                console.log(error);
+            }
         })
         return {
             list_departments,

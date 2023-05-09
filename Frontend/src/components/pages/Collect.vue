@@ -158,6 +158,7 @@ export default {
         // Adding sample
         const addSampleData = () => {
             let data = new Sample();
+            Quagga.stop();
             sampleData.value.origin = sampleData.value.origin.id;
             data.AddCollectSampleData(sampleData.value).then((response => {
                 // sampleData.value = response.data.data;
@@ -179,7 +180,11 @@ export default {
         onMounted(() => {
             listDepartment();
             listLaberatory();
-            Quagga.stop();
+            try {
+                Quagga.stop();
+            } catch (error) {
+                console.log(error);
+            }
         })
         return {
             list_departments,
