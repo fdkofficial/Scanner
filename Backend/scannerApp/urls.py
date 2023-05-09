@@ -20,10 +20,12 @@ admin.site.site_header = 'Scanner App'                    # default: "Django Adm
 admin.site.index_title = 'Dashboard'                 # default: "Site administration"
 from django.contrib import admin
 from django.urls import path,include
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('baton/', include('baton.urls')),
     path('auth/', include('login.urls')),
     path('', include('scanner.urls')),
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
