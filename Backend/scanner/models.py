@@ -1,5 +1,8 @@
 from django.db import models
-
+import qrcode
+from io import BytesIO
+from django.core.files import File
+from PIL import Image, ImageDraw
 from django.contrib.auth.models import User
 
 class Department(models.Model):
@@ -8,13 +11,28 @@ class Department(models.Model):
     def __str__(self):
         return str(self.name)
     
+import random
 
-
+def random_string():
+    return str(random.randint(100000, 9999999))
 class Unit(models.Model):
     department = models.ForeignKey(Department,on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
+    unit_no = models.CharField(max_length=255,default=random_string)
+    qr_image = models.ImageField(blank=True, null=True, upload_to='QRCode')
     def __str__(self):
         return str(self.department.name) + ":- " + str(self.name)
+    def save(self, *args, **kwargs):
+        qr_image = qrcode.make(self.unit_no)
+        qr_offset = Image.new('RGB', (310, 310), 'white')
+        draw_img = ImageDraw.Draw(qr_offset)
+        qr_offset.paste(qr_image)
+        file_name = f'{self.name}-{self.id}qr.png'
+        stream = BytesIO()
+        qr_offset.save(stream, 'PNG')
+        self.qr_image.save(file_name, File(stream), save=False)
+        qr_offset.close()
+        super().save(*args, **kwargs)
 
 class Sample(models.Model):
     sample_no = models.CharField(max_length=500)

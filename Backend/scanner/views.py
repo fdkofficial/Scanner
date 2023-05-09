@@ -191,6 +191,24 @@ def department(request):
         }
         return Response(data=data,status=status.HTTP_200_OK)
 
+
+@api_view(['GET','POST','PUT','DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def untis(request):
+    if request.method == 'GET':
+        code = request.GET.get('code')
+        obj = Unit.objects.filter(unit_no=code).last()
+        serializer = UnitSerializer(obj)
+        data = {
+            "satus":"ok",
+            "message":"successfull",
+            "data": serializer.data
+        }
+        return Response(data=data,status=status.HTTP_200_OK)
+
+
+
 from django.shortcuts import render
 def sample_history(request):
     if request.method == 'GET':
