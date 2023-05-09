@@ -56,6 +56,7 @@ class SampleData(models.Model):
     sample_no = models.ManyToManyField(Sample,null=True)
     origin = models.ForeignKey(Unit,on_delete=models.CASCADE,null=True,blank=True)
     collect_date = models.DateTimeField(auto_now=True)
+    took_a_round = models.BooleanField(default=False)
     collector_user = models.ForeignKey(User,on_delete=models.CASCADE)
 
 class DropSampleData(models.Model):
