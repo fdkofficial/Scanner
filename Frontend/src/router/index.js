@@ -26,6 +26,16 @@ const routes = [
     name: 'drop',
     component: () => import('../components/pages/Drop.vue')
   },
+  {
+    path: '/collect-unit-scanner',
+    name: 'collect-unit-scanner',
+    component: () => import('../components/pages/CollectUnitScanner.vue')
+  },
+  {
+    path: '/drop-unit-scanner',
+    name: 'drop-unit-scanner',
+    component: () => import('../components/pages/DropUnitScanner.vue')
+  },
 ]
 
 const router = createRouter({

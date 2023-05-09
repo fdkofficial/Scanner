@@ -144,8 +144,6 @@ export default {
                     });
                 });
             }
-
-
         }
         // Listing Department
         const listDepartment = () => {
