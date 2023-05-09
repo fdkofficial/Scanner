@@ -1,8 +1,8 @@
 from django.db import models
-import qrcode
-from io import BytesIO
 from django.core.files import File
-from PIL import Image, ImageDraw
+import barcode
+from barcode.writer import ImageWriter
+from io import BytesIO
 from django.contrib.auth.models import User
 
 class Department(models.Model):
@@ -23,15 +23,17 @@ class Unit(models.Model):
     def __str__(self):
         return str(self.department.name) + ":- " + str(self.name)
     def save(self, *args, **kwargs):
-        qr_image = qrcode.make(self.unit_no)
-        qr_offset = Image.new('RGB', (310, 310), 'white')
-        draw_img = ImageDraw.Draw(qr_offset)
-        qr_offset.paste(qr_image)
-        file_name = f'{self.name}-{self.id}qr.png'
+        # Generate the barcode
+        barcode_image = barcode.get('code128', self.unit_no, writer=ImageWriter())
+        
+        # Save the barcode image to a BytesIO buffer
         stream = BytesIO()
-        qr_offset.save(stream, 'PNG')
+        barcode_image.write(stream)
+        
+        # Save the buffer to a file
+        file_name = f'{self.unit_no}-{self.id}barcode.png'
         self.qr_image.save(file_name, File(stream), save=False)
-        qr_offset.close()
+        
         super().save(*args, **kwargs)
 
 class Sample(models.Model):
