@@ -33,9 +33,12 @@ def collect_samples(request):
         for i in request.data['sample_no']:
             fil = Sample.objects.filter(sample_no=i).last()
             if fil:
+                fil.collected = True
+                fil.save()
                 sample_list.append(fil.id)
             else:
-                sample = Sample(sample_no=i,collected=True)
+                sample = Sample(sample_no=i)
+                sample.collected = True
                 sample.save()
                 sample_list.append(sample.id)
         request.data['sample_no'] = sample_list
@@ -105,6 +108,7 @@ def drop_samples(request):
         sample_list = []
         request.data['reciever_user'] = request.user.id
         request.data['drop_of_date'] = datetime.datetime.now()
+        error_ = None
         for i in request.data['sample_no']:
             fil = Sample.objects.filter(sample_no=i).last()
             if fil and fil.collected:
@@ -112,7 +116,7 @@ def drop_samples(request):
                 fil.collected = False
                 fil.save()
                 sample_list.append(fil.id)
-            elif not fil:
+            elif not fil.collected:
                 error_ = i+" Not Collected Yet"
                 # sample = Sample(sample_no=i,collected=False)
                 # sample.save()
@@ -123,7 +127,7 @@ def drop_samples(request):
             
         request.data['sample_no'] = sample_list
         request.data['collector_user'] = request.user.id
-        if error_:
+        if error_ is not None:
                 data = error_
                 return Response(data=data,status=status.HTTP_200_OK)
         serializer = DropSampleDataSerializer(data=request.data)
@@ -198,7 +202,10 @@ def department(request):
 def untis(request):
     if request.method == 'GET':
         code = request.GET.get('code')
+        
         obj = Unit.objects.filter(unit_no=code).last()
+        print(obj)
+        
         serializer = UnitSerializer(obj)
         data = {
             "satus":"ok",
@@ -245,6 +252,10 @@ def labaratory(request):
     if request.method == 'GET':
         obj = Laberatory.objects.all()
         serializer = LaberatorySerializer(obj,many=True)
+        code = request.GET.get("code")
+        if code is not None:
+            obj = Laberatory.objects.filter(lab_id=code).last()
+            serializer = LaberatorySerializer(obj)
         data = {
             "satus":"ok",
             "message":"successfull",

@@ -5,16 +5,19 @@ from barcode.writer import ImageWriter
 from io import BytesIO
 from django.contrib.auth.models import User
 
-class Department(models.Model):
-    name = models.CharField(max_length=255)
-    dep_id = models.CharField(max_length=255)
-    def __str__(self):
-        return str(self.name)
+
     
 import random
 
 def random_string():
-    return str(random.randint(100000, 9999999))
+    return str(random.randint(100000, 99999999))
+
+
+class Department(models.Model):
+    name = models.CharField(max_length=255)
+    dep_id = models.CharField(max_length=255,default=random_string)
+
+
 class Unit(models.Model):
     department = models.ForeignKey(Department,on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
@@ -48,12 +51,29 @@ class Sample(models.Model):
 
 class Laberatory(models.Model):
     name = models.CharField(max_length=255)
+    lab_id = models.CharField(max_length=255,default=random_string)
+    qr_image = models.ImageField(blank=True, null=True, upload_to='QRCode')
+    def __str__(self):
+        return str(self.name)
+    def save(self, *args, **kwargs):
+        # Generate the barcode
+        barcode_image = barcode.get('code128', self.lab_id, writer=ImageWriter())
+        
+        # Save the barcode image to a BytesIO buffer
+        stream = BytesIO()
+        barcode_image.write(stream)
+        
+        # Save the buffer to a file
+        file_name = f'{self.lab_id}-{self.id}barcode.png'
+        self.qr_image.save(file_name, File(stream), save=False)
+        
+        super().save(*args, **kwargs)
     def __str__(self):
         return str(self.name)
 
 # Create your models here.
 class SampleData(models.Model):
-    sample_no = models.ManyToManyField(Sample,null=True)
+    sample_no = models.ManyToManyField(Sample,null=True,blank=True)
     origin = models.ForeignKey(Unit,on_delete=models.CASCADE,null=True,blank=True)
     collect_date = models.DateTimeField(auto_now=True)
     took_a_round = models.BooleanField(default=False)
