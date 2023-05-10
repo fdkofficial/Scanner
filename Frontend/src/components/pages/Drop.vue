@@ -9,7 +9,8 @@
                 <span class="text-danger" v-if="error_msg">{{ error_label }}</span>
                 <div class="my-2 mx-2">
                     <label for="ReciverId" class="form-label">Reciver ID</label>
-                    <input type="text" v-model="sampleData.reciever_id" class="form-control" id="ReciverId" placeholder="Reciver Id">
+                    <input type="text" v-model="sampleData.reciever_id" class="form-control" id="ReciverId"
+                        placeholder="Reciver Id">
                 </div>
                 <div class="vh-30 table-responsive my-3">
                     <table class="table table-bordered table-stripped text-center m-0 vh-30">
@@ -53,11 +54,8 @@ export default {
         let sampleData = ref({
             "sample_no": [],
             "reciever_id": null,
-            "destination": {
-                name: "",
-                id: ""
-            },
-        })
+            "destination": { name: "", id: "" },
+        });
         let list_departments = ref();
         let list_lab = ref();
         let error_msg = ref(false);
@@ -125,14 +123,14 @@ export default {
                 alert("Please Enter Reciever id")
             }
             else {
-                Quagga.stop();
                 sampleData.value.destination = sampleData.value.destination.id;
                 data.AddDropSampleData(sampleData.value).then((response => {
                     if (response.status == 201) {
                         console.log(response.status, '---')
                         // sampleData.value = response.data.data;
                         console.log('saved', response.data)
-                        router.push({path:'/'})
+                        Quagga.stop();
+                        router.push({ path: '/' })
                         sampleData.value = {
                             "sample_no": [],
                             "destination": {
@@ -143,6 +141,8 @@ export default {
                     }
                     else {
                         alert(response.data)
+                        Quagga.stop();
+                        router.push({ path: '/' })
                     }
                 }))
             }
@@ -169,11 +169,7 @@ export default {
             }
         })
         onUnmounted(() => {
-            try {
-                Quagga.stop();
-            } catch (error) {
-                console.log(error);
-            }
+            Quagga.stop();
         })
         return {
             list_departments,
@@ -190,7 +186,7 @@ export default {
 }
 </script>
 <style>
-.vh-30{
+.vh-30 {
     height: 30vh;
     overflow-y: scroll;
 }

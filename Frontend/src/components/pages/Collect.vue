@@ -9,7 +9,8 @@
                 <span class="text-danger" v-if="error_msg">{{ error_label }}</span>
                 <div class="my-2 mx-2">
                     <div class="form-check form-switch">
-                        <input @change="sampleData.took_a_round = !sampleData.took_a_round" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <input @change="sampleData.took_a_round = !sampleData.took_a_round" class="form-check-input"
+                            type="checkbox" role="switch" id="flexSwitchCheckDefault">
                         <label class="form-check-label" for="flexSwitchCheckDefault">Took a round</label>
                     </div>
                 </div>
@@ -40,7 +41,7 @@
             </div>
             <div class="card-footer text-end">
                 <button class="btn btn-primary mx-2" @click="addSampleData">Save</button>
-                <button class="btn btn-secondary" @click="$router.push({'path':'/'})">Close</button>
+                <button class="btn btn-secondary" @click="$router.push({ 'path': '/' })">Close</button>
             </div>
         </div>
     </div>
@@ -53,20 +54,18 @@ import Sample from "../../services/Sample"
 import Quagga from 'quagga'
 export default {
     setup() {
+        // Declaration
         let sampleData = ref({
             "sample_no": [],
             "took_a_round": false,
-            "origin": {
-                name: "",
-                id: ""
-            },
-        })
-
+            "origin": { name: "", id: "" },
+        });
         let list_departments = ref();
         let error_msg = ref(false);
         let error_label = ref();
         let list_lab = ref();
         let decod = ref();
+        let unit = ref()
         // Scaning Part
         const ChangeFunc = () => {
             if (navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function') {
@@ -126,21 +125,17 @@ export default {
             }))
         }
         onUnmounted(() => {
-            try {
-                Quagga.stop();
-            } catch (error) {
-                console.log(error);
-            }
+            Quagga.stop();
         })
         // Adding sample
         const addSampleData = () => {
             let data = new Sample();
-            Quagga.stop();
             sampleData.value.origin = sampleData.value.origin.id;
             data.AddCollectSampleData(sampleData.value).then((response => {
                 // sampleData.value = response.data.data;
                 console.log('saved', response.data)
-                router.push({path:'/'})
+                Quagga.stop();
+                router.push({ path: '/' })
                 sampleData.value = {
                     "sample_no": [],
                     "origin": '',
@@ -155,7 +150,6 @@ export default {
                 console.log(sampleData.value.origin, response.data)
             }))
         }
-        let unit = ref()
         onMounted(() => {
             const {
                 params: { id },
@@ -184,7 +178,7 @@ export default {
 }
 </script>
 <style>
-.vh-30{
+.vh-30 {
     height: 30vh;
     overflow-y: scroll;
 }
